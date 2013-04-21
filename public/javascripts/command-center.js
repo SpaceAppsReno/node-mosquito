@@ -123,11 +123,40 @@ var KeyboardInput = Backbone.View.extend({
             // Send new message
             console.log('sending:', message);
             this.socket.emit('publish', {topic: topic, message: message});
+            
+             //Emit to Unity
+             var unityMessage = {
+ 			  "Motor1": parseInt(left_motor),
+ 			  "Motor2": parseInt(right_motor),
+ 			  "Motor3": 0
+ 			}
+ 			GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(unityMessage));
         }
         this.last_message = message;
     },
     makeMessage: messageMaker,
 });
+
+var LeapInput = Backbone.View.extend({
+    initialize: function(options) {
+         this.socket = options.socket;
+     },
+     startInput: function() {
+        console.log("Starting leap input");
+        gesture.mode = gesture.MODE_OPENROV;
+ 		gesture.armed = true;
+ 		gesture.checkLibrary();
+     	gesture.connect(); // using default values for; host URI; control and telemetry topics
+     },
+     stopInput: function() {
+        console.log("Stopping leap input");
+        gesture.mode = gesture.MODE_OPENROV;
+        gesture.armed = false;
+ 		gesture.allStop(); 
+ 		gesture.disconnect();   
+ 	},
+});
+
 
 // Accelerometer Input
 // ===================
@@ -205,6 +234,14 @@ var AccelerometerInput = Backbone.View.extend({
             // Send new message
             console.log('sending:', message);
             this.socket.emit('publish', {topic: topic, message: message});
+            
+             //Emit to Unity
+             var unityMessage = {
+ 			  "Motor1": parseInt(leftMotor),
+ 			  "Motor2": parseInt(rightMotor),
+ 			  "Motor3": 0
+ 			}
+ 			GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(unityMessage));
         }
         this.last_message = message;
 
@@ -243,12 +280,14 @@ $(function() {
     // TODO pass other globals here
     var keyboard_interface = new KeyboardInput({socket: socket});
     var accelerometer_interface = new AccelerometerInput({socket: socket});
+    var leap_interface = new LeapInput({socket: socket});
 
     // Input Interfaces
     // TODO should be a registry
     var input_interfaces = {
         'keyboard': keyboard_interface,
         'accelerometer': accelerometer_interface,
+        'leap': leap_interface
     };
 
     // The current input interface
