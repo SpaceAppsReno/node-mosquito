@@ -31,12 +31,24 @@
       socket.emit('publish', {topic: topic, message: parseInt((3 * power / 4)) + ":" + power});
     });
 
+    $('#sharpright').on('click', function() {
+      socket.emit('publish', {topic: topic, message: power + ":" + parseInt(( power) / 2)});
+    });
+
+    $('#sharpleft').on('click', function() {
+      socket.emit('publish', {topic: topic, message: parseInt((power / 2)) + ":" + power});
+    });
+
     $('#backright').on('click', function() {
       socket.emit('publish', {topic: topic, message: -power + ":" + -parseInt(( 3 * power) / 4)});
     });
 
     $('#backleft').on('click', function() {
       socket.emit('publish', {topic: topic, message: -parseInt((3 * power / 4)) + ":" + -power});
+    });
+
+    $('#stop').on('click', function() {
+      socket.emit('publish', {topic: topic, message: "0:0"});
     });
 
 
@@ -92,14 +104,19 @@
             <td><button id="right">⇗</button></td>
           </tr>
           <tr>
-            <td></td>
+            <td><button id="sharpleft">⇐</button></td>
             <td><button id="circle">&#x27f3;</button></td>
-            <td></td>
+            <td><button id="sharpright">⇒</button></td>
           </tr>
           <tr>
             <td><button id="backleft">⇙</button></td>
             <td><button id="backward">⇓</button></td>
             <td><button id="backright">⇘</button></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><button id="stop">STOP</td>
+            <td></td>
           </tr>
         </tbody>
       </table>
