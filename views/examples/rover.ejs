@@ -1,0 +1,145 @@
+<% layout('../layout') %>
+<% script('/socket.io/socket.io.js') %>
+<% script('http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js') %>
+<% script('//use.typekit.net/rtf2zey.js') %>
+<% stylesheet('http://pinocc.io/modules/content/tpl/css/foundation.css') %>
+
+<script type="text/javascript">
+  var socket = io.connect(window.location.origin);
+  var topic = 'erictj/3pi-control';
+  
+  var power = 30;
+
+  $(function() {
+    $('#circle').on('click', function() {
+      socket.emit('publish', {topic: topic, message: power + ":" + -power});
+    });
+
+    $('#forward').on('click', function() {
+      socket.emit('publish', {topic: topic, message: power + ":" + power});
+    });
+
+    $('#backward').on('click', function() {
+      socket.emit('publish', {topic: topic, message: -power + ":" + -power});
+    });
+
+    $('#right').on('click', function() {
+      socket.emit('publish', {topic: topic, message: power + ":" + parseInt(( 3 * power) / 4)});
+    });
+
+    $('#left').on('click', function() {
+      socket.emit('publish', {topic: topic, message: parseInt((3 * power / 4)) + ":" + power});
+    });
+
+    $('#backright').on('click', function() {
+      socket.emit('publish', {topic: topic, message: -power + ":" + -parseInt(( 3 * power) / 4)});
+    });
+
+    $('#backleft').on('click', function() {
+      socket.emit('publish', {topic: topic, message: -parseInt((3 * power / 4)) + ":" + -power});
+    });
+
+
+    $('#power100').on('click', function() {
+      power = 100;
+      $('#currentPower').html(power);
+    });
+
+    $('#power80').on('click', function() {
+      power = 80;
+      $('#currentPower').html(power);
+    });
+
+    $('#power60').on('click', function() {
+      power = 60;
+      $('#currentPower').html(power);
+    });
+
+    $('#power40').on('click', function() {
+      power = 40;
+      $('#currentPower').html(power);
+    });
+
+    $('#power30').on('click', function() {
+      power = 30;
+      $('#currentPower').html(power);
+    });
+
+    $('#power20').on('click', function() {
+      power = 20;
+      $('#currentPower').html(power);
+    });
+    
+
+    $('#currentPower').html(power);
+
+  });
+
+
+</script>
+
+<section class="meat">  
+  <div class="row">
+    <div class="twelve columns">      
+      <h1>Rover Demo</h1>
+    </div>
+    <div class="six columns">
+      <table>
+        <tbody>
+          <tr>
+            <td><button id="left">⇖</button></td>
+            <td><button id="forward">⇑</button></td>
+            <td><button id="right">⇗</button></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><button id="circle">&#x27f3;</button></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><button id="backleft">⇙</button></td>
+            <td><button id="backward">⇓</button></td>
+            <td><button id="backright">⇘</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="six columns">
+      <div id="currentPower">-</div>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <button id="power100">100</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="power80">80</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="power60">60</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="power40">40</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="power30">30</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="power20">20</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
