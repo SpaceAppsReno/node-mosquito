@@ -250,12 +250,10 @@ var leap_interface = {
     },
     stop: function() {
         console.log("Stopping leap input");
-        /*
         gesture.mode = gesture.MODE_OPENROV;
         gesture.armed = false;
 		gesture.allStop(); 
 		gesture.disconnect();   
-		*/     
 	},
 }
 
