@@ -45,6 +45,7 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/examples/rover', examples.rover);
 app.get('/examples/wasd', examples.wasd);
+app.get('/examples/command', examples.command);
 
 // mqtt handling
 var mqtt = mqtt.createClient(mqttPort, mqttHost, mqtt_login);

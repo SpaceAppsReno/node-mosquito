@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>OpenROV: Command Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+	<% stylesheet('/stylesheets/lib/bootstrap.css') %>
+	<% stylesheet('/stylesheets/style.css') %>
+
+	<% script('/socket.io/socket.io.js') %>
+	
+	<%-scripts%>
+    <%-stylesheets%>
+
+	<style type="text/css">
+		body {
+			font-family: Helvetica, Verdana, Arial, sans-serif;
+			background-color: white;
+			color: black;
+			text-align: center;
+		}
+		a:link, a:visited {
+			color: #000;
+		}
+		a:active, a:hover {
+			color: #666;
+		}
+		p.header {
+			font-size: small;
+		}
+		p.header span {
+			font-weight: bold;
+		}
+		p.footer {
+			font-size: x-small;
+		}
+		div.content {
+			margin: auto;
+			width: 960px;
+		}
+		div.missing {
+			margin: auto;
+			position: relative;
+			top: 50%;
+			width: 193px;
+		}
+		div.missing a {
+			height: 63px;
+			position: relative;
+			top: -31px;
+		}
+		div.missing img {
+			border-width: 0px;
+		}
+		div#unityPlayer {
+			cursor: default;
+			height: 600px;
+			width: 960px;
+		}
+	</style>
+
+	<script src="/javascripts/lib/jquery-1.9.1.min.js"></script>
+	<script src="/javascripts/lib/underscore-min.js"></script>
+	<script src="/javascripts/lib/backbone-min.js"></script>
+  <script src="/javascripts/command.js"></script>
+  
+  <script src="/javascripts/unity/UnityObject.js"></script>
+  <script src="/javascripts/leap/leap.js"></script>
+  <script src="/javascripts/leap/cc.gesture.js"></script>
+    
+	<script src="/javascripts/command-center.js"></script>
+	
+	<!-- Leap Motion & Unity -->
+	<script>
+		gesture.checkLibrary();
+		gesture.connect(); // using default values for; host URI; control and telemetry topics
+		
+        function disconnect() {
+			gesture.disconnect();        	
+        }	
+		window.onunload=disconnect;
+    </script>
+	<script type="text/javascript">
+	<!--
+		function GetUnity() {
+			if (typeof unityObject != "undefined") {
+				return unityObject.getObjectById("unityPlayer");
+			}
+			return null;
+		}
+		if (typeof unityObject != "undefined") {
+			unityObject.embedUnity("unityPlayer", "/javascripts/unity/WebPlayer.unity3d", 1440, 900);
+		}
+	-->
+	</script>
+	
+
+	<script type="text/javascript">
+	</script>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" id = "openrov" href="#">OpenROV</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Command Center</a></li>
+              <li><a href="#settings">Settings</a></li>
+            </ul>
+		
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+   	<div class="container">
+
+		<div style = "height: 100%; position: relative">
+			
+			<div id="unityPlayer">
+				<div class="missing">
+					<a href="http://unity3d.com/webplayer/" title="Unity Web Player. Install now!">
+						<img alt="Unity Web Player. Install now!" src="http://webplayer.unity3d.com/installation/getunity.png" width="193" height="63" />
+					</a>
+				</div>
+			</div>
+			
+		</div>
+	       
+		<!-- Example row of columns -->
+		<div class="row toolbar">
+			<ul id = "controllers">
+			 	<li><img id = "keyboardBtn" data-interface = "keyboard" class = "selected" src = "/img/controllers/keyboard.png" /></li>
+			  	<li><img id = "mobileBtn" data-interface = "accelerometer" src = "/img/controllers/mobile.png" /></li>
+				<li><img id = "leapBtn" data-interface = "leap" src = "/img/controllers/leap.png" /></li>
+			</ul>	
+		</div>
+		
+		<div class = "leap overlay">
+			<img src = "/img/controllers/leap_overlay.png" />
+		</div>
+		
+		<div class = "keyboard overlay">
+			<img src = "/img/controllers/keyboard_overlay.png" />
+		</div>
+		
+		<div class = "mobile overlay">
+			<img src = "/img/controllers/mobile_overlay.png" />
+		</div>
+	
+	</div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="./assets/js/jquery.js"><\/script>')</script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+
+  </body>
+</html>
