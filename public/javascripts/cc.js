@@ -240,8 +240,8 @@ var accelerometer_interface = {
                
                /* Emit to Unity*/
                 var unityMessage = {
-    			  "Motor1": parseInt(left_motor),
-    			  "Motor2": parseInt(right_motor),
+    			  "Motor1": parseInt(leftMotor),
+    			  "Motor2": parseInt(rightMotor),
     			  "Motor3": 0
     			}
     			GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(unityMessage));
