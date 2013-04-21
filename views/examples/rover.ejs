@@ -1,9 +1,8 @@
 <% layout('../layout') %>
 <% script('/socket.io/socket.io.js') %>
-<% script('http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js') %>
-<% script('//use.typekit.net/rtf2zey.js') %>
-<% stylesheet('http://pinocc.io/modules/content/tpl/css/foundation.css') %>
+<% stylesheet('/stylesheets/lib/foundation.css') %>
 
+<script src="/javascripts/lib/jquery-1.9.1.min.js">
 <script type="text/javascript">
   var socket = io.connect(window.location.origin);
   var topic = 'erictj/3pi-control';
