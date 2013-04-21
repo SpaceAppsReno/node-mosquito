@@ -1,0 +1,111 @@
+body {
+  padding-top: 40px; /* 60px to make the container go all the way to the bottom of the topbar */
+  background-color: #D1CEC8;
+}
+
+.navbar-inner {
+  background: #666;
+}
+
+.navbar .nav > li > a {
+  color:#fff;
+  font-weight:bold;
+  text-shadow:none;
+  padding:10px 20px 11px;
+  transition: background .33s;
+    -moz-transition: background .33s;
+    -webkit-transition: background .33s;
+    -o-transition: background .33s;
+}
+
+.navbar .nav .active > a, .navbar .nav .active > a:hover {
+  background: rgba(0,0,0,.2);
+}
+
+.navbar .nav > li > a:hover {
+  background: rgba(0,0,0,.1);
+}
+
+.container { width: 100%; padding: 0; margin: 0; }
+
+.telemetry {
+}
+
+.toolbar {
+    padding: 20px;
+    margin: 0;
+    position: fixed;
+    top: 40px;
+    right: 0;
+    background-color: #CDCAC4;
+    color: white;
+    width: 140px;
+    height: 100%;
+}
+
+.overlay {
+    background-color: rgba(0,0,0,.4);
+    padding: 20px;
+    border-radius: 10px;
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    color: white;
+    font-weight: bold;
+    font-size: 2em;
+}
+
+.leap { display: none; }
+
+.mobile { display: none; }
+
+.keyboard { display: none; }
+
+.leap img {
+    width: 150px;
+}
+
+.mobile img, .keyboard img { width: 75px; }
+
+/* Controllers */
+ul#controllers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul#controllers li {
+    margin: 0px 0px 10px 0px;
+}
+
+ul#controllers li img {
+    cursor: pointer;
+    opacity: .4;
+}
+
+ul#controllers li img.selected {
+    opacity: 1;
+}
+
+ul#controllers li img:hover {
+    opacity: 1;
+}
+
+/* Telemetry Styling */
+
+#depth_m {
+    display: block;
+}
+
+#depth_ft {
+    display: block;
+}
+
+.group:after {
+	content: "." !important; 
+    display: block !important; 
+    height: 0 !important; 
+    clear: both !important; 
+    visibility: hidden !important;
+    }
+
