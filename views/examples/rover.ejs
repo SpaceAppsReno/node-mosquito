@@ -2,91 +2,10 @@
 <% script('/socket.io/socket.io.js') %>
 <% stylesheet('/stylesheets/lib/foundation.css') %>
 
-<script src="/javascripts/lib/jquery-1.9.1.min.js">
+<script src="/javascripts/lib/jquery-1.9.1.min.js"></script>
+<script src="/javascripts/rover.js"></script>
+
 <script type="text/javascript">
-  var socket = io.connect(window.location.origin);
-  var topic = 'erictj/3pi-control';
-  
-  var power = 30;
-
-  $(function() {
-    $('#circle').on('click', function() {
-      socket.emit('publish', {topic: topic, message: power + ":" + -power});
-    });
-
-    $('#forward').on('click', function() {
-      socket.emit('publish', {topic: topic, message: power + ":" + power});
-    });
-
-    $('#backward').on('click', function() {
-      socket.emit('publish', {topic: topic, message: -power + ":" + -power});
-    });
-
-    $('#right').on('click', function() {
-      socket.emit('publish', {topic: topic, message: power + ":" + parseInt(( 3 * power) / 4)});
-    });
-
-    $('#left').on('click', function() {
-      socket.emit('publish', {topic: topic, message: parseInt((3 * power / 4)) + ":" + power});
-    });
-
-    $('#sharpright').on('click', function() {
-      socket.emit('publish', {topic: topic, message: power + ":" + parseInt(( power) / 2)});
-    });
-
-    $('#sharpleft').on('click', function() {
-      socket.emit('publish', {topic: topic, message: parseInt((power / 2)) + ":" + power});
-    });
-
-    $('#backright').on('click', function() {
-      socket.emit('publish', {topic: topic, message: -power + ":" + -parseInt(( 3 * power) / 4)});
-    });
-
-    $('#backleft').on('click', function() {
-      socket.emit('publish', {topic: topic, message: -parseInt((3 * power / 4)) + ":" + -power});
-    });
-
-    $('#stop').on('click', function() {
-      socket.emit('publish', {topic: topic, message: "0:0"});
-    });
-
-
-    $('#power100').on('click', function() {
-      power = 100;
-      $('#currentPower').html(power);
-    });
-
-    $('#power80').on('click', function() {
-      power = 80;
-      $('#currentPower').html(power);
-    });
-
-    $('#power60').on('click', function() {
-      power = 60;
-      $('#currentPower').html(power);
-    });
-
-    $('#power40').on('click', function() {
-      power = 40;
-      $('#currentPower').html(power);
-    });
-
-    $('#power30').on('click', function() {
-      power = 30;
-      $('#currentPower').html(power);
-    });
-
-    $('#power20').on('click', function() {
-      power = 20;
-      $('#currentPower').html(power);
-    });
-    
-
-    $('#currentPower').html(power);
-
-  });
-
-
 </script>
 
 <section class="meat">  

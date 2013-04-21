@@ -1,8 +1,13 @@
 var topic = 'erictj/3pi-control';
 
+// var power = {
+//   min: 0,
+//   max: 200,
+// };
+
 var power = {
-  min: 0,
-  max: 200,
+  band: 100,
+  idle: 0,
 };
 
 var Controls = {};
@@ -68,10 +73,9 @@ $(function() {
     controls.set('active_keys', []);
   });
 
-  var power_band = power.max - power.min;
   var zero_message = [
-    String(parseInt(power_band / 2)),
-    String(parseInt(power_band / 2)),
+    String(parseInt(power.idle)),
+    String(parseInt(power.idle)),
   ].join(":");
   var last_message = zero_message; 
 
@@ -79,23 +83,25 @@ $(function() {
   setInterval(function() {
     var active_keys = controls.get("active_keys");
 
+    // TODO this logic is a mess
+
     // Get the active keys and translate that into a motor speed
     // Start the motors at half max + min
-    var left_motor = power_band / 2;
-    var right_motor = power_band / 2;
+    var left_motor = power.idle;
+    var right_motor = power.idle;
 
     // Lookup, not search!
     // If W (87), increase both motors by 1/4 (max - min)
     var forward = ~$.inArray("87", active_keys);
     if (forward) {
-      left_motor += power_band / 6;
-      right_motor += power_band / 6;
+      left_motor += power.band / 6;
+      right_motor += power.band / 6;
     }
 
     var backward = ~$.inArray("83", active_keys);
     if (backward) {
-      left_motor -= power_band / 6;
-      right_motor -= power_band / 6;
+      left_motor -= power.band / 6;
+      right_motor -= power.band / 6;
     }
 
     var left = ~$.inArray("65", active_keys);
@@ -106,22 +112,22 @@ $(function() {
       // If D (68), increase left motor by 1/4 and right motor by 1/8
       // TODO and backwards?
       if (forward) {
-        right_motor -= power_band / 10;
+        right_motor -= power.band / 10;
       } else if (backward) {
-        right_motor += power_band / 10;
+        right_motor += power.band / 10;
       } else {
-        left_motor += power_band / 6;
-        right_motor -= power_band / 6;
+        left_motor += power.band / 6;
+        right_motor -= power.band / 6;
       }
     } else if (left) {
       // If A (65), increase left motor by 1/8 and right motor by 1/4
       if (forward) {
-        left_motor -= power_band / 10;
+        left_motor -= power.band / 10;
       } else if (backward) {
-        left_motor += power_band / 10;
+        left_motor += power.band / 10;
       } else {
-        right_motor += power_band / 6;
-        left_motor -= power_band / 6;
+        right_motor += power.band / 6;
+        left_motor -= power.band / 6;
       }
     }
 
