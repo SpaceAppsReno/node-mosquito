@@ -1,4 +1,16 @@
 var gesture = ('undefined' === typeof module ? {} : module.exports);
+
+var myHand = null;
+var handForwardBack = 0;
+var handLeftRight = 0;
+var pausedFrame = null;
+var latestFrame = null;
+var last = 0;
+var updatePeriod = 100;
+var xRangeCutoff = 0.25;
+var phiRangeCutoff = Math.PI / 6;
+var controller = new Leap.Controller({enableGestures: true});
+
 (function() {
 
     /**
@@ -41,27 +53,27 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 		var topMotor = 0;
 		var betaSensitivity = 0.5;
 		var gammaSensitivity = 0.3;
-		var deltaSensitivity = 0.5;
+		var deltaSensitivity = 0.2;
 
 		var previousDeltaY = 0;
 
 		var defaultHost = 'api.pinocc.io';
 		var defaultControlTopic = 'erictj/3pi-control';
 		var defaultTelemetryTopic = 'erictj/3pi-telemetry';
-		
+
 		var controlTopic = defaultControlTopic;
 		var telemetryTopic = defaultTelemetryTopic;
 
 		var maxForwardBack = 20;
 		var maxLeftRight = 20;
 		var maxUpDown = 20;
-		
+
 		var host;
 		var controlTopic;
 		var telemetryTopic;
-		
+
 		var socket;
-    
+
  		 /**
          * gesture namespace.
          *
@@ -77,7 +89,7 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
          */
 
         gesture.version = '0.0.1';
-        
+
 
         /**
          * gesture armed - will send messages to device
@@ -86,19 +98,19 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
          */
 
         gesture.armed = false;
-        
+
         /**
          * gesture online - connection established to socket server
          *
          * @api public
          */
 		gesture.online = false;
-		
+
 		gesture.MODE_ROVER = 1;
 		gesture.MODE_OPENROV = 2;
-		
+
 		gesture.mode = gesture.MODE_ROVER;
-         
+
 
         /**
          * Manages connections to hosts.
@@ -130,17 +142,17 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 				gesture.online = false;
 			});
 		};
-		
+
 		gesture.allStop = function() {
 			var message = {
 			  "Motor1": 0,
 			  "Motor2": 0,
 			  "Motor3": 0
-			}	
-			GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(message));			
+			}
+			GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(message));
 			console.log('all stop: ' + JSON.stringify(message));
 		}
-		
+
 		gesture.disconnect = function() {
 			gesture.allStop();
 			socket.disconnect();
@@ -158,7 +170,7 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 		  }
 		  return true;
 		};
-		
+
 
 		var tilt = function(forwardBack, leftRight, upDown) {
 		//    console.log('tilt: ' + forwardBack + ' - leftRight: ' + leftRight);
@@ -188,7 +200,7 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 			if (!gesture.armed) {
 				return;
 			}
-			
+
 			for (var i=0; i < leftMotorArray.length; i++) {
 				leftMotor += leftMotorArray[i];
 			}
@@ -206,9 +218,9 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 			leftMotor = +(leftMotor.toFixed());
 			rightMotor = +(rightMotor.toFixed());
 			topMotor = +(topMotor.toFixed());
-			
-			if(gesture.mode == gesture.MODE_ROVER) {			
-				var message = { 
+
+			if(gesture.mode == gesture.MODE_ROVER) {
+				var message = {
 					topic: controlTopic,
 					message: leftMotor + ':' + rightMotor
 				};
@@ -216,24 +228,24 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 				console.log('publish: ' + JSON.stringify(message));
 			}
 			else if(gesture.mode == gesture.MODE_OPENROV) {
-				
+
 				var message = {
 				  "Motor1": leftMotor,
 				  "Motor2": rightMotor,
 				  "Motor3": topMotor
-				}	
+				}
 
-				GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(message));			
+				GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(message));
 				console.log('publish: ' + JSON.stringify(message));
-				
-				var telemetryMessage = { 
+
+				var telemetryMessage = {
 					topic: telemetryTopic,
 					message: message
 				};
-				
+
 				socket.emit('publish', telemetryMessage);
 				console.log('publish: ' + JSON.stringify(telemetryMessage));
-				
+
 			}
 			else {
 				console.log('Publish failed: unknown mode');
@@ -241,11 +253,70 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 		}, 500);
 
 
-		Leap.loop(controllerOptions, function(frame) {
+		controller.loop(function(frame) {
+		//Leap.loop(controllerOptions, function(frame) {
+			latestFrame = frame;
+			var html = "<div>Hand? " + (frame.hands.length > 0) + "</div>";
+
+			if (!pausedFrame) {
+				myHand = new HandData(frame, 0, 10);
+
+				if (myHand.hand == null) {
+					myHand = null;
+				}
+
+				var event = document.createEvent("Event");
+				event.initEvent("tiltleap",true,true);
+				event.forward = 0;
+				event.yaw = 0;
+				event.pitch = 0;
+
+				if (myHand != null) {
+					html += "<div>Direction: " + myHand.x + "," + myHand.y + "," + myHand.z + "</div>";
+					html += "<div>Sampled: " + myHand.sampledX + "," + myHand.sampledY + "," + myHand.sampledZ + "</div>";
+					html += "<div>Radius: " + myHand.radius + "</div>";
+					html += "<div>SampledRadius: " + myHand.sampledRadius + "</div>";
+
+					var r = Math.sqrt(myHand.x * myHand.x + myHand.y * myHand.y + myHand.z * myHand.z);
+					//var theta = Math.acos(myHand.z / r);  // unused
+					var coPhi = (Math.PI / 4) - Math.atan(myHand.y / myHand.x);
+
+					if (myHand.x < -xRangeCutoff) {
+						event.forward = 0;
+						event.yaw = -10;
+					} else if (myHand.x > xRangeCutoff) {
+						event.forward = 0;
+						event.yaw = 10;
+					} else {
+						event.forward = 10;
+						event.yaw = 0;
+
+						if (coPhi < -phiRangeCutoff) {
+							event.pitch = -10;
+						} else if (coPhi > phiRangeCutoff) {
+							event.pitch = 10;
+						}
+					}
+				}
+
+				//document.dispatchEvent(event);
+				tilt(-event.forward, event.yaw, event.pitch);
+			}
+
+			var date = new Date();
+			var now = date.getTime();
+
+			if (now < last + updatePeriod) {
+				return;
+			}
+
+			//document.getElementById('out').innerHTML = html;
+			last = now;
+/*
 			if (!gesture.armed) {
 				return;
 			}
-		  
+
 		  // Display Hand object data
 		  if (frame.hands.length > 0) {
 			for (var i = 0; i < frame.hands.length; i++) {
@@ -256,12 +327,12 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 			  handPalmPosition = hand.palmPosition;
 // 			  console.log('handPalmPosition: ' + handPalmPosition);
 
-			  if(Math.abs(+handPalmPosition[0]-handPalmPositionZ) > 15) {			  
+			  if(Math.abs(+handPalmPosition[0]-handPalmPositionZ) > 15) {
 			    handPalmPositionZ = handPalmPosition[0];
 			    forwardBack = handPalmPositionZ;
 			  }
 
-			  if(Math.abs(+handPalmPosition[1]-handPalmPositionY) > 10) {			  
+			  if(Math.abs(+handPalmPosition[1]-handPalmPositionY) > 10) {
 			    handPalmPositionY = handPalmPosition[1];
        		    upDown = handPalmPositionY;
 			  }
@@ -269,7 +340,7 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 			  	upDown = 0;
 			  }
 
-			  if(Math.abs(+handPalmPosition[2]-handPalmPositionX) > 15) {			  
+			  if(Math.abs(+handPalmPosition[2]-handPalmPositionX) > 15) {
 			    handPalmPositionX = handPalmPosition[2];
 			    leftRight = handPalmPositionX;
 			  }
@@ -282,7 +353,7 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 			  if (previousFrame) {
 				translation = hand.translation(previousFrame);
 //				console.log('translation: ' + translation);
-				
+
 				if(Math.abs((translation[1] - previousDeltaY)) > 2) {
 					upDown = handPalmPosition[1];
 				}
@@ -296,9 +367,9 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 
 				scaleFactor = hand.scaleFactor(previousFrame);
 //				console.log('scaleFactor: ' + scaleFactor);
-				
+
 			  }
-	  
+
 			  if(forwardBack > maxForwardBack) {
 				forwardBack = maxForwardBack;
 			  }
@@ -317,7 +388,7 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 			  else if(upDown < -maxUpDown) {
 				upDown = -maxUpDown;
 			  }
-	  
+
 			  tilt(forwardBack, leftRight, upDown);
 
 			}
@@ -328,6 +399,50 @@ var gesture = ('undefined' === typeof module ? {} : module.exports);
 
 		  // Store frame for motion functions
 		  previousFrame = frame;
+*/
 		});
 	})('object' === typeof module ? module.exports : (this.gesture = {}), this);
 })();
+
+function HandData(frame, index, numSamples) {
+	if (frame.hands.length <= index || !frame.hands[index].valid) {
+		return null;
+	}
+
+	var hand = frame.hands[index];
+
+	this.hand = hand;
+	this.x = hand.direction[0];
+	this.y = hand.direction[1];
+	this.z = hand.direction[2];
+	this.radius = hand.sphereRadius;
+
+	var samples = 0;
+	var x = 0;
+	var y = 0;
+	var z = 0;
+	var rad = 0;
+
+	for (var i = 1; i <= numSamples; i++) {
+		var f = controller.frame(i);
+
+		if (f.hands.length <= index || !f.hands[index].valid) {
+			continue;
+		}
+
+		var oldHand = f.hands[index];
+
+		samples++;
+		x += oldHand.direction[0];
+		y += oldHand.direction[1];
+		z += oldHand.direction[2];
+		rad += oldHand.sphereRadius;
+	}
+
+	if (samples > 0) {
+		this.sampledX = x / samples;
+		this.sampledY = y / samples;
+		this.sampledZ = z / samples;
+		this.sampledRadius = rad / samples;
+	}
+}

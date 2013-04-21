@@ -148,6 +148,14 @@ var keyboard_interface = {
              // Send new message
              console.log('sending:', message)
              socket.emit('publish', {topic: topic, message: message});
+             
+             //Emit to Unity
+             var unityMessage = {
+ 			  "Motor1": parseInt(left_motor),
+ 			  "Motor2": parseInt(right_motor),
+ 			  "Motor3": 0
+ 			}
+ 			GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(unityMessage));
            }
            last_message = message;
 
@@ -229,6 +237,14 @@ var accelerometer_interface = {
                // Send new message
                console.log('sending:', message)
                socket.emit('publish', {topic: topic, message: message});
+               
+               /* Emit to Unity*/
+                var unityMessage = {
+    			  "Motor1": parseInt(left_motor),
+    			  "Motor2": parseInt(right_motor),
+    			  "Motor3": 0
+    			}
+    			GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(unityMessage));
              }
              last_message = message;
           
