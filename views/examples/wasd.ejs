@@ -66,23 +66,19 @@
 	<script src="/javascripts/lib/jquery-1.9.1.min.js"></script>
 	<script src="/javascripts/lib/underscore-min.js"></script>
 	<script src="/javascripts/lib/backbone-min.js"></script>
-	<script src="/javascripts/cc.js"></script>
-	<script src="/javascripts/command.js"></script>
 	
 	<script src="/javascripts/unity/UnityObject.js"></script>
 	<script src="/javascripts/leap/leap.js"></script>
 	<script src="/javascripts/leap/cc.gesture.js"></script>
-		
+	
+	<script src="/javascripts/cc.js"></script>
+	<script src="/javascripts/command.js"></script>
 	
 	<!-- Leap Motion & Unity -->
 	<script>
-		gesture.checkLibrary();
-		gesture.connect(); // using default values for; host URI; control and telemetry topics
+	
 		
-        function disconnect() {
-			gesture.disconnect();        	
-        }	
-		window.onunload=disconnect;
+       
     </script>
 	<script type="text/javascript">
 	<!--
@@ -141,22 +137,6 @@
 					</a>
 				</div>
 			</div>
-			
-			<button id = "openrov-go" style = "madding: 15px 30px 16px; font-size: 17px; background-color: #437EC4; color: white">Drive OpenROV</button>
-			
-			<script>
-				$('#openrov-go').click(function(e) {
-		   		  gesture.mode = gesture.MODE_OPENROV;
-				  if (!gesture.armed) {
-					gesture.armed = true;
-					$('#openrov-go').html("OpenROV Driving enabled!");
-				  } else {
-					gesture.armed = false;
-					gesture.allStop();		  
-					$('#openrov-go').html("Drive OpenROV");
-				  }
-				});
-			</script>
 			
 		</div>
 	       

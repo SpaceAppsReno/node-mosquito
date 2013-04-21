@@ -83,7 +83,7 @@ var keyboard_interface = {
 
          // Check the keys on the framerate
          
-         this.ccinterval = setInterval(function() {
+         setInterval(function() {
            var active_keys = controls.get("active_keys");
 
            // TODO this logic is a mess
@@ -155,9 +155,8 @@ var keyboard_interface = {
     },
     stop: function() {
         console.log("Stopping keyboard");
-        this.controls.destroy();
-        this.listener.remove();
-        clearInterval(this.ccinterval);
+       // this.controls.destroy();
+        //this.listener.remove();
     },
     
 };
@@ -243,11 +242,21 @@ var accelerometer_interface = {
 var leap_interface = {
     start: function() {
         console.log("Starting leap input");
+        gesture.mode = gesture.MODE_OPENROV;
+		gesture.armed = true;
+		gesture.checkLibrary();
+    	gesture.connect(); // using default values for; host URI; control and telemetry topics
 
     },
     stop: function() {
         console.log("Stopping leap input");
-    },
+        /*
+        gesture.mode = gesture.MODE_OPENROV;
+        gesture.armed = false;
+		gesture.allStop(); 
+		gesture.disconnect();   
+		*/     
+	},
 }
 
 var interfaces = {
@@ -259,13 +268,12 @@ var interfaces = {
 function initInputSwitcher()
 {
       $("#controllers li img").click(function() {
-         //switchInterface($(this).data("interface"));
+         switchInterface($(this).data("interface"));
       });
 }
 
 function switchInterface(name)
 {
-    console.log(ccinterface);
     if(ccinterface)
     { 
         ccinterface.stop();
