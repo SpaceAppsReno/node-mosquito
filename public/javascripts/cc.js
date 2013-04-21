@@ -1,6 +1,6 @@
 var topic = 'erictj/3pi-control';
 var socket;
-var interface;
+var ccinterface;
 
 // var power = {
 //   min: 0,
@@ -83,7 +83,7 @@ var keyboard_interface = {
 
          // Check the keys on the framerate
          
-         setInterval(function() {
+         this.ccinterval = setInterval(function() {
            var active_keys = controls.get("active_keys");
 
            // TODO this logic is a mess
@@ -154,8 +154,10 @@ var keyboard_interface = {
          }, framerate);
     },
     stop: function() {
+        console.log("Stopping keyboard");
         this.controls.destroy();
         this.listener.remove();
+        clearInterval(this.ccinterval);
     },
     
 };
@@ -177,6 +179,7 @@ var accelerometer_interface = {
                   tilt(event.beta, event.gamma);
                 }, true);
         }
+    
         
         var tilt = function(forwardBack, leftRight) {
           forwardBack = forwardBack * -1;
@@ -234,8 +237,6 @@ var accelerometer_interface = {
     },
     stop: function() {
         console.log("Stopping accelerometer input");
-        this.controls.destroy();
-        this.listener.remove();
     },
 };
 
@@ -258,29 +259,30 @@ var interfaces = {
 function initInputSwitcher()
 {
       $("#controllers li img").click(function() {
-         switchInterface($(this).data("interface"), interface, socket);
+         //switchInterface($(this).data("interface"));
       });
 }
 
-function switchInterface(name, interface, socket)
+function switchInterface(name)
 {
-    if(interface)
+    console.log(ccinterface);
+    if(ccinterface)
     { 
-        interface.stop();
+        ccinterface.stop();
     }
     
     if(name in interfaces)
     {
-          interface = interfaces[name];
+          ccinterface = interfaces[name];
     }
 
-      if(!interface)
+      if(!ccinterface)
       {
           console.log("No interface selected");
           return false;
       }
 
-      interface.start(socket);
+      ccinterface.start(socket);
 }
 
 $(function() {
@@ -290,8 +292,7 @@ $(function() {
   initInputSwitcher();
   
   var default_interface = "keyboard";
-  interface = null;
   
-  switchInterface(default_interface, interface, socket);
+  switchInterface(default_interface);
 
 });
