@@ -24,7 +24,7 @@ var KeyboardInput = Backbone.View.extend({
     initialize: function(options) {
         this.activeKeys = [];
         // WASD, 87, 65, 83, 68
-        this.allowed_keys = [87, 65, 83, 68];
+        this.allowed_keys = [87, 65, 83, 68, 77, 75];
         this.listenTo(Backbone, 'blur', this.clearKeys);
 
         // Attach the given socket to this
@@ -75,6 +75,7 @@ var KeyboardInput = Backbone.View.extend({
         // TODO power is a global
         var left_motor = power.idle;
         var right_motor = power.idle;
+        var y_motor = power.idle;
 
         // Lookup, not search!
         // If W (87), increase both motors by 1/4 (max - min)
@@ -82,6 +83,16 @@ var KeyboardInput = Backbone.View.extend({
         if (forward) {
             left_motor += power.band / 6;
             right_motor += power.band / 6;
+        }
+        
+        var upwards = ~$.inArray(77, this.activeKeys);
+        if(upwards) {
+           y_motor -= power.band / 2; 
+        }
+        var downwards = ~$.inArray(75, this.activeKeys);
+        console.log(this.activeKeys, downwards);
+        if(downwards) {
+            y_motor += power.band / 2; 
         }
 
         var backward = ~$.inArray(83, this.activeKeys);
@@ -123,15 +134,17 @@ var KeyboardInput = Backbone.View.extend({
             // Send new message
             console.log('sending:', message);
             this.socket.emit('publish', {topic: topic, message: message});
-            
-             //Emit to Unity
-             var unityMessage = {
- 			  "Motor1": parseInt(left_motor),
- 			  "Motor2": parseInt(right_motor),
- 			  "Motor3": 0
- 			}
- 			GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(unityMessage));
         }
+        
+         //Emit to Unity
+         var unityMessage = {
+		  "Motor1": parseInt(left_motor),
+		  "Motor2": parseInt(right_motor),
+		  "Motor3": parseInt(y_motor)
+		}
+		console.log(unityMessage);
+		GetUnity().SendMessage("JavaScriptClient", "HandleMessage", JSON.stringify(unityMessage));
+        
         this.last_message = message;
     },
     makeMessage: messageMaker,
