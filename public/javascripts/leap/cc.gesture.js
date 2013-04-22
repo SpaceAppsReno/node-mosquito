@@ -224,7 +224,7 @@ var controller = new Leap.Controller({enableGestures: true});
 					topic: controlTopic,
 					message: leftMotor + ':' + rightMotor
 				};
-				socket.emit('publish', message);
+				socket.emit('publish', JSON.stringify(message));
 				console.log('publish: ' + JSON.stringify(message));
 			}
 			else if(gesture.mode == gesture.MODE_OPENROV) {
@@ -243,7 +243,7 @@ var controller = new Leap.Controller({enableGestures: true});
 					message: message
 				};
 
-				socket.emit('publish', telemetryMessage);
+				socket.emit('publish', JSON.stringify(telemetryMessage));
 				console.log('publish: ' + JSON.stringify(telemetryMessage));
 
 			}
